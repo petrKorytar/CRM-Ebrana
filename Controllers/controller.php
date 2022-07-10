@@ -5,43 +5,36 @@
       //Based on inputs from app.js, it calls methods in the Dboperation class. /////////////////////////////
          $received_data = json_decode(file_get_contents("php://input"));
          
-      // Returns all users.   //////////////////////////////////////////////////
-         if($received_data->action == 'fetchall'){
+         switch($received_data->action){
+            case 'fetchall': // Returns all users.
+               echo json_encode($dbOperation->fetchAllUsers());
+               break;
 
-          echo json_encode($dbOperation->fetchAllUsers());
-         }
-
-      // Insert new user to the database. ///////////////////////////////////////
-         if($received_data->action == 'insert'){
-
-            $firstName = $received_data->firstName;
-            $lastName = $received_data->lastName;
-            $job = $received_data->job;
+            case 'insert': // Insert new user to the database.
+               $firstName = $received_data->firstName;
+               $lastName = $received_data->lastName;
+               $job = $received_data->job;
            
-            $dbOperation->insertUser($firstName, $lastName, $job);
-         }
+               $dbOperation->insertUser($firstName, $lastName, $job);
+               break;
 
-      // Finds the user by user id and returns it. ///////////////////////
-         if($received_data->action == 'fetchSingle'){
+            case 'fetchSingle': // Finds the user by user id and returns it.
+               $result = $dbOperation->fetchSingleUser($received_data->id);
+               echo json_encode($result);
+               break;
 
-          $result = $dbOperation->fetchSingleUser($received_data->id);
-            echo json_encode($result);
-         }
-
-      // Inserts the updated user data back in to the database. ///////////////////
-         if($received_data->action == 'update'){
-            
-            $firstName = $received_data->firstName;
-            $lastName = $received_data->lastName;
-            $job = $received_data->job;
-            $id = $received_data->hiddenId;
+            case 'update': // Inserts the updated user data back in to the database.
+               $firstName = $received_data->firstName;
+               $lastName = $received_data->lastName;
+               $job = $received_data->job;
+               $id = $received_data->hiddenId;
         
-            $dbOperation->updateUser($firstName,$lastName,$job,$id);
-         }
+               $dbOperation->updateUser($firstName,$lastName,$job,$id);
+               break;
 
-      // Delete user by user id.  /////////////////////////////////
-         if($received_data->action=='delete'){
-            $id = $received_data->id;
-            $dbOperation->deleteUser($id);
+            case 'delete': // Delete user by user id.
+               $id = $received_data->id;
+               $dbOperation->deleteUser($id);
+               break;
          }
 ?>
